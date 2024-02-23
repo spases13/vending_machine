@@ -2,24 +2,24 @@ package fr.norsys;
 
 public class Product {
 
-    public enum ProductType {
+    public enum ProductName {
         WATER,
         COCA,
         TWIX,
         BUENO
     }
 
-    private ProductType name;
+    private ProductName name;
     private int price;
     private int initialStock;
 
-    Product(ProductType name, int price, int initialStock) {
+    Product(ProductName name, int price, int initialStock) {
         this.name = name;
         this.price = price;
         this.initialStock = initialStock;
     }
 
-    public ProductType getName() {
+    public ProductName getName() {
         return name;
     }
 
