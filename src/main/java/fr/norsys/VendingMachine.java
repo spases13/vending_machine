@@ -3,10 +3,13 @@ package fr.norsys;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.norsys.Product.ProductType;
+
 public class VendingMachine {
     private Product[] products;
     private int[] stock;
-    private int balance = 0;
+    private int balance = 20;
+    private int exchange = 0;
     private Product selectedProduct = null;
     private List<Integer> introducedMoney = new ArrayList<>();
 
@@ -40,26 +43,35 @@ public class VendingMachine {
         }
     }
 
-    public void selectProduct(int index) {
+    public void selectProduct(ProductType productType) {
         selectedProduct = null;
-    
-        if (index >= 1 && index <= products.length) {
-            if (stock[index - 1] > 0) {
-                selectedProduct = products[index - 1];
-                System.out.println("Selected Product: " + selectedProduct.getName());
-                System.out.println("Price: " + selectedProduct.getPrice());
-            } else {
-                System.out.println("Selected product is out of stock.");
+
+        for (int i = 0; i < products.length; i++) {
+            if (products[i].getName() == productType) {
+                if (stock[i] > 0) {
+                    selectedProduct = products[i];
+                    System.out.println("Selected Product: " + selectedProduct.getName());
+                    System.out.println("Price: " + selectedProduct.getPrice());
+                    return;
+                } else {
+                    System.out.println("Selected product is out of stock.");
+                    return;
+                }
             }
-        } else {
-            System.out.println("Invalid product selection.");
         }
+
+        System.out.println("Invalid product selection.");
     }
-    
+
     public void introduceMoney(Coin money) {
+        System.out.println("money introduced : " + money.value);
         introducedMoney.add(money.getValue());
         balance += money.getValue();
-        System.out.println("Balance: " + balance);
+
+        // System.out.println("-------------------------");
+        // System.out.println("BALANCE " + balance);
+        System.out.println("INTRODUCED TOTAL : " + getSumIntroducedMoney());
+        System.out.println("-------------------------");
     }
 
     public boolean makePayment() {
@@ -119,15 +131,40 @@ public class VendingMachine {
     }
 
     public Product getSelectedProduct() {
-        if(selectedProduct != null) { 
+        if (selectedProduct != null) {
             return selectedProduct;
-        }
-        else { 
+        } else {
             return null;
         }
     }
 
     public int getBalance() {
         return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
+    public int getExchange() {
+        return this.exchange;
+    }
+
+    public void setExchange(int exchange) {
+        this.exchange = exchange;
+    }
+
+    public void performBuyingAction() {
+        if (this.getSumIntroducedMoney() >= this.getSelectedProduct().getPrice()) {
+            System.out.println("Payment successful. Enjoy your " + this.getSelectedProduct().getName());
+            System.out.println("Introduced : " + this.getSumIntroducedMoney());
+            System.out.println("Price : " + this.getSelectedProduct().getPrice());
+            this.setExchange(
+                    this.getSumIntroducedMoney() - this.getSelectedProduct().getPrice());
+            System.out.println("Your exchange is " + this.getExchange());
+        }
+        else { 
+            System.out.println("Not enough , insert more");
+        }
     }
 }

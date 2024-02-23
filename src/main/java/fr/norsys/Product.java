@@ -1,17 +1,25 @@
 package fr.norsys;
 
 public class Product {
-    private String name;
+
+    public enum ProductType {
+        WATER,
+        COCA,
+        TWIX,
+        BUENO
+    }
+
+    private ProductType name;
     private int price;
     private int initialStock;
 
-    Product(String name, int price, int initialStock) {
+    Product(ProductType name, int price, int initialStock) {
         this.name = name;
         this.price = price;
         this.initialStock = initialStock;
     }
 
-    public String getName() {
+    public ProductType getName() {
         return name;
     }
 
