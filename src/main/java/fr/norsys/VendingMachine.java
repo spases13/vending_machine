@@ -6,12 +6,11 @@ import java.util.List;
 public class VendingMachine {
     private Product[] products;
     private int[] stock;
-    private int solde = 50;
-    static List<Integer> arrayOfIntroducedMoney = new ArrayList<>();
-    private Product selectedProduct;
-    private int change;
+    private int balance = 0;
+    private Product selectedProduct = null;
+    private List<Integer> introducedMoney = new ArrayList<>();
 
-    enum Coin {
+    public enum Coin {
         DIRHAM_1(1),
         DIRHAM_2(2),
         DIRHAM_5(5),
@@ -28,27 +27,6 @@ public class VendingMachine {
         }
     }
 
-    public int getSumIntroducedMoney() {
-        int sum = 0;
-        for (int money : arrayOfIntroducedMoney) {
-            sum += money;
-        }
-        return sum;
-    }
-
-    public void introduceMoney(Coin money) {
-        arrayOfIntroducedMoney.add(money.value);
-        System.out.println("introduceMoneySum = " + getSumIntroducedMoney());
-    }
-
-    public int getSolde() {
-        return solde;
-    }
-
-    public void setSolde(int solde) {
-        this.solde = solde;
-    }
-
     VendingMachine(Product[] products, int[] initialStock) {
         this.products = products;
         this.stock = new int[initialStock.length];
@@ -63,15 +41,13 @@ public class VendingMachine {
     }
 
     public void selectProduct(int index) {
-        selectedProduct = null; // Reset selectedProduct
-        change = 0; // Reset change
+        selectedProduct = null;
     
         if (index >= 1 && index <= products.length) {
             if (stock[index - 1] > 0) {
                 selectedProduct = products[index - 1];
                 System.out.println("Selected Product: " + selectedProduct.getName());
                 System.out.println("Price: " + selectedProduct.getPrice());
-                stock[index - 1]--;
             } else {
                 System.out.println("Selected product is out of stock.");
             }
@@ -79,10 +55,16 @@ public class VendingMachine {
             System.out.println("Invalid product selection.");
         }
     }
+    
+    public void introduceMoney(Coin money) {
+        introducedMoney.add(money.getValue());
+        balance += money.getValue();
+        System.out.println("Balance: " + balance);
+    }
 
     public boolean makePayment() {
-        if (selectedProduct != null && getSumIntroducedMoney() >= selectedProduct.getPrice()) {
-            change = getSumIntroducedMoney() - selectedProduct.getPrice();
+        if (selectedProduct != null && balance >= selectedProduct.getPrice()) {
+            int change = balance - selectedProduct.getPrice();
             if (change > 0) {
                 System.out.println("Payment successful. Enjoy your " + selectedProduct.getName() +
                         ". Don't forget your change: " + change + " Dirhams");
@@ -90,8 +72,8 @@ public class VendingMachine {
                 System.out.println("Payment successful. Enjoy your " + selectedProduct.getName());
             }
 
-            selectedProduct = null; // Reset selectedProduct after successful payment
-            arrayOfIntroducedMoney.clear(); // Clear introduced money
+            stock[getIndex(selectedProduct)]--;
+            resetAfterPayment();
             return true;
         } else {
             System.out.println("Payment failed. Not enough money or no product selected.");
@@ -100,12 +82,12 @@ public class VendingMachine {
     }
 
     public boolean takeRefund() {
-        if (!arrayOfIntroducedMoney.isEmpty()) {
-            System.out.println("Refund successful. Take your money: " + getSumIntroducedMoney() + " Dirhams");
-            arrayOfIntroducedMoney.clear(); // Clear introduced money
+        if (balance > 0) {
+            System.out.println("Refunding: " + balance);
+            resetAfterPayment();
             return true;
         } else {
-            System.out.println("No money to refund.");
+            System.out.println("No refund available.");
             return false;
         }
     }
@@ -117,7 +99,35 @@ public class VendingMachine {
         System.out.println("Vending machine has been reset.");
     }
 
+    public int getSumIntroducedMoney() {
+        return introducedMoney.stream().mapToInt(Integer::intValue).sum();
+    }
+
+    private void resetAfterPayment() {
+        selectedProduct = null;
+        introducedMoney.clear();
+        balance = 0;
+    }
+
+    private int getIndex(Product product) {
+        for (int i = 0; i < products.length; i++) {
+            if (products[i].equals(product)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public Product getSelectedProduct() {
-        return selectedProduct;
+        if(selectedProduct != null) { 
+            return selectedProduct;
+        }
+        else { 
+            return null;
+        }
+    }
+
+    public int getBalance() {
+        return balance;
     }
 }

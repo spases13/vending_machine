@@ -5,10 +5,10 @@ public class Product {
     private int price;
     private int initialStock;
 
-    Product(String name, int price) {
+    Product(String name, int price, int initialStock) {
         this.name = name;
         this.price = price;
-        this.initialStock = 0;
+        this.initialStock = initialStock;
     }
 
     public String getName() {

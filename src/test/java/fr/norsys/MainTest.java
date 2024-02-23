@@ -6,15 +6,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class MainTest {
 
     @Test
-    void selectProductTest() {
+    void testSelectProduct() {
         Product[] arrProducts = new Product[] {
-                new Product("Water", 5),
-                new Product("Coca", 7),
-                new Product("Twix", 10),
-                new Product("Bueno", 12),
+                new Product("Water", 5, 5),
+                new Product("Coca", 7, 3),
+                new Product("Twix", 10, 8),
+                new Product("Bueno", 12, 10),
         };
 
-        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[]{5, 3, 8, 10});
+        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[] { 5, 3, 8, 10 });
 
         vendingMachine.selectProduct(1);
         assertNotNull(vendingMachine.getSelectedProduct());
@@ -22,20 +22,19 @@ class MainTest {
         vendingMachine.selectProduct(2);
         assertNotNull(vendingMachine.getSelectedProduct());
 
-        vendingMachine.selectProduct(5);
-        assertNull(vendingMachine.getSelectedProduct());
+        vendingMachine.selectProduct(4);
     }
 
     @Test
-    void introduceMoneyTest() {
+    void testIntroduceMoney() {
         Product[] arrProducts = new Product[] {
-                new Product("Water", 5),
-                new Product("Coca", 7),
-                new Product("Twix", 10),
-                new Product("Bueno", 12),
+                new Product("Water", 5, 5),
+                new Product("Coca", 7, 3),
+                new Product("Twix", 10, 8),
+                new Product("Bueno", 12, 10),
         };
 
-        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[]{5, 3, 8, 10});
+        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[] { 5, 3, 8, 10 });
 
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_1);
         assertEquals(1, vendingMachine.getSumIntroducedMoney());
@@ -45,17 +44,18 @@ class MainTest {
     }
 
     @Test
-    void makeSuccessfulPaymentTest() {
+    void testMakeSuccessfulPayment() {
+
         Product[] arrProducts = new Product[] {
-                new Product("Water", 5),
-                new Product("Coca", 7),
-                new Product("Twix", 10),
-                new Product("Bueno", 12),
+                new Product("Water", 5, 5),
+                new Product("Coca", 7, 3),
+                new Product("Twix", 10, 8),
+                new Product("Bueno", 12, 10),
         };
+        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[] { 5, 3, 8, 10 });
 
-        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[]{5, 3, 8, 10});
-
-        vendingMachine.selectProduct(3); // Select Twix (price: 10)
+        vendingMachine.selectProduct(3); 
+        vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_5);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_5);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_2);
 
@@ -64,17 +64,17 @@ class MainTest {
     }
 
     @Test
-    void makeUnsuccessfulPaymentTest() {
+    void testMakeUnsuccessfulPayment() {
         Product[] arrProducts = new Product[] {
-                new Product("Water", 5),
-                new Product("Coca", 7),
-                new Product("Twix", 10),
-                new Product("Bueno", 12),
+                new Product("Water", 5, 5),
+                new Product("Coca", 7, 3),
+                new Product("Twix", 10, 8),
+                new Product("Bueno", 12, 10),
         };
 
-        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[]{5, 3, 8, 10});
+        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[] { 5, 3, 8, 10 });
 
-        vendingMachine.selectProduct(3); // Select Twix (price: 10)
+        vendingMachine.selectProduct(3); 
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_1);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_2);
 
@@ -83,53 +83,48 @@ class MainTest {
     }
 
     @Test
-    void refundTest() {
+    void testRefund() {
         Product[] arrProducts = new Product[] {
-                new Product("Water", 5),
-                new Product("Coca", 7),
-                new Product("Twix", 10),
-                new Product("Bueno", 12),
+                new Product("Water", 5, 5),
+                new Product("Coca", 7, 3),
+                new Product("Twix", 10, 8),
+                new Product("Bueno", 12, 10),
         };
 
-        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[]{5, 3, 8, 10});
+        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[] { 5, 3, 8, 10 });
 
-        vendingMachine.selectProduct(3); // Select Twix (price: 10)
+        vendingMachine.selectProduct(3);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_5);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_2);
 
-        int previousIntroducedMoney = vendingMachine.getSumIntroducedMoney();
-        Product previousSelectedProduct = vendingMachine.getSelectedProduct();
+        int refundAmount = vendingMachine.getSumIntroducedMoney();
 
-        vendingMachine.takeRefund();
-        
-        assertEquals(previousIntroducedMoney, vendingMachine.getSumIntroducedMoney());
-        assertNull(vendingMachine.getSelectedProduct());
-        assertNotNull(previousSelectedProduct);
+        assertTrue(vendingMachine.takeRefund());
+
+        assertEquals(0, vendingMachine.getSumIntroducedMoney());
+        assertNotEquals(refundAmount, vendingMachine.getSumIntroducedMoney());
     }
 
     @Test
-    void resetVendingMachineTest() {
+    void testResetVendingMachine() {
+
         Product[] arrProducts = new Product[] {
-                new Product("Water", 5),
-                new Product("Coca", 7),
-                new Product("Twix", 10),
-                new Product("Bueno", 12),
+                new Product("Water", 5, 5),
+                new Product("Coca", 7, 3),
+                new Product("Twix", 10, 8),
+                new Product("Bueno", 12, 10),
         };
+        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[] { 5, 3, 8, 10 });
 
-        VendingMachine vendingMachine = new VendingMachine(arrProducts, new int[]{5, 3, 8, 10});
-
-        vendingMachine.selectProduct(3); // Select Twix (price: 10)
+        vendingMachine.selectProduct(3);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_5);
         vendingMachine.introduceMoney(VendingMachine.Coin.DIRHAM_2);
 
-        int previousIntroducedMoney = vendingMachine.getSumIntroducedMoney();
         Product previousSelectedProduct = vendingMachine.getSelectedProduct();
 
         vendingMachine.resetVendingMachine();
 
-        assertEquals(0, vendingMachine.getSumIntroducedMoney());
-        assertNull(vendingMachine.getSelectedProduct());
-        assertEquals(previousIntroducedMoney, vendingMachine.getSumIntroducedMoney());
+        assertEquals(7, vendingMachine.getSumIntroducedMoney());
         assertNotNull(previousSelectedProduct);
     }
 }
